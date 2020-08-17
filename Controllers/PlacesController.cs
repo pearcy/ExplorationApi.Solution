@@ -15,11 +15,24 @@ namespace ExplorationApi.Controllers
     {
       _db = db;
     }
+    
     [HttpGet]
-    public ActionResult<IEnumerable<Place>> GetAction()
+    public ActionResult<IEnumerable<Place>> GetAction(string username, int rating)
     {
-      return _db.Places.ToList();
+      var query = _db.Places.AsQueryable();
+
+      if (username != null)
+      {
+        query = query.Where(entry => entry.UserName == username);
+      }
+
+      if (rating != 0)
+      {
+        query = query.Where(entry => entry.Rating == rating);
+      }
+      return query.ToList();
     }
+
     [HttpPost]
     public void Post([FromBody] Place place)
     {
