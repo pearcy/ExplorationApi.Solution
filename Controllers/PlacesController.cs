@@ -55,6 +55,11 @@ namespace ExplorationApi.Controllers
     public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
     {
       var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+      var pagedData = await _db.Places
+        .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+        .Take(validFilter.PageSize)
+        .ToListAsync();
+
       var response = await _db.Places.ToListAsync();
       return Ok(response);
     }
