@@ -7,6 +7,7 @@ using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using ExplorationApi.Wrappers;
 // using Pagination.WebApi.Contexts;
 // using Pagination.WebApi.Filter;
 // using Pagination.WebApi.Helpers;
@@ -26,22 +27,22 @@ namespace ExplorationApi.Controllers
       _db = db;
     }
     
-    [HttpGet]
-    public ActionResult<IEnumerable<Place>> GetAction(string username, int rating)
-    {
-      var query = _db.Places.AsQueryable();
+    // [HttpGet]
+    // public ActionResult<IEnumerable<Place>> GetAction(string username, int rating)
+    // {
+    //   var query = _db.Places.AsQueryable();
 
-      if (username != null)
-      {
-        query = query.Where(entry => entry.UserName == username);
-      }
+    //   if (username != null)
+    //   {
+    //     query = query.Where(entry => entry.UserName == username);
+    //   }
 
-      if (rating != 0)
-      {
-        query = query.Where(entry => entry.Rating == rating);
-      }
-      return query.ToList();
-    }
+    //   if (rating != 0)
+    //   {
+    //     query = query.Where(entry => entry.Rating == rating);
+    //   }
+    //   return query.ToList();
+    // }
 
     [HttpPost]
     public void Post([FromBody] Place place)
@@ -50,6 +51,14 @@ namespace ExplorationApi.Controllers
       _db.SaveChanges();
     }
     
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
+    {
+      var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+      var response = await _db.Places.ToListAsync();
+      return Ok(response);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
