@@ -3,6 +3,16 @@ using ExplorationApi.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Net.WebSockets;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Pagination.WebApi.Contexts;
+using Pagination.WebApi.Filter;
+using Pagination.WebApi.Helpers;
+using Pagination.WebApi.Models;
+using Pagination.WebApi.Services;
+using Pagination.WebApi.Wrappers;
 
 namespace ExplorationApi.Controllers
 {
@@ -41,9 +51,10 @@ namespace ExplorationApi.Controllers
     }
     
     [HttpGet("{id}")]
-    public ActionResult<Place> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-      return _db.Places.FirstOrDefault(entry => entry.PlaceId == id);
+      var place = await _db.Places.Where(a => a.PlaceId == id).FirstOrDefaultAsync();
+      return Ok(new Response<Place>(place));
     }
 
     [HttpPut("{id}")]
