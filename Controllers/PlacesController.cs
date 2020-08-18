@@ -27,22 +27,22 @@ namespace ExplorationApi.Controllers
       _db = db;
     }
     
-    // [HttpGet]
-    // public ActionResult<IEnumerable<Place>> GetAction(string username, int rating)
-    // {
-    //   var query = _db.Places.AsQueryable();
+    [HttpGet]
+    public ActionResult<IEnumerable<Place>> GetAction(string username, int rating)
+    {
+      var query = _db.Places.AsQueryable();
 
-    //   if (username != null)
-    //   {
-    //     query = query.Where(entry => entry.UserName == username);
-    //   }
+      if (username != null)
+      {
+        query = query.Where(entry => entry.UserName == username);
+      }
 
-    //   if (rating != 0)
-    //   {
-    //     query = query.Where(entry => entry.Rating == rating);
-    //   }
-    //   return query.ToList();
-    // }
+      if (rating != 0)
+      {
+        query = query.Where(entry => entry.Rating == rating);
+      }
+      return query.ToList();
+    }
 
     [HttpPost]
     public void Post([FromBody] Place place)
@@ -50,13 +50,27 @@ namespace ExplorationApi.Controllers
       _db.Places.Add(place);
       _db.SaveChanges();
     }
+    [HttpGet("rating/best")]
+    public ActionResult<IEnumerable<Place>> GetBestRating()
+    {
+      var query = _db.Places.OrderByDescending(entry => entry.Rating);
+      return query.ToList();
+    }
+
+    [HttpGet("rating/worst")]
+    public ActionResult<IEnumerable<Place>> GetWorstRating()
+    {
+      var query = _db.Places.OrderBy(entry => entry.Rating);
+      return query.ToList();
+    }
     
-    [HttpGet]
+    [HttpGet("pages/")]
     public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
     {
       var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
       var pagedData = await _db.Places
         .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+        // Say we need to get the results for the third page of our website, counting 20 as the number of results we want. That would mean we want to skip the first ((3 – 1) * 20) = 40 results, and then take the next 20 and return them to the caller.
         .Take(validFilter.PageSize)
         .ToListAsync();
       var totalRecords = await _db.Places.CountAsync();
@@ -70,12 +84,23 @@ namespace ExplorationApi.Controllers
       return Ok(new Response<Place>(place));
     }
 
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] Place place)
+    // [HttpPut("{id}")]
+    // public void Put(int id, [FromBody] Place place)
+    // {
+    //   place.PlaceId = id;
+    //   _db.Entry(place).State = EntityState.Modified;
+    //   _db.SaveChanges();
+    // }
+
+    [HttpPut("{username}/{id}")]
+    public void Put(int id, [FromBody] Place place, string username)
     {
-      place.PlaceId = id;
-      _db.Entry(place).State = EntityState.Modified;
-      _db.SaveChanges();
+      if(place.UserName == username)
+      {
+        place.PlaceId = id;
+        _db.Entry(place).State = EntityState.Modified;
+        _db.SaveChanges();
+      }
     }
 
     [HttpDelete("{id}")]

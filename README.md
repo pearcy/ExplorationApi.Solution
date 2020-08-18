@@ -30,6 +30,12 @@ As a user, I want to look up random destinations just for fun.
 
 ## Setup/Installation Requirements
 
+There are multiple ways to query the API. To search by username or a specific rating(1-5), add the parameter(s) after `places?` like so: `http://localhost:5000/api/places?username=kate&rating=5`. Use an ampersand(&) to separate parameters.
+
+
+
+To search by page and/or to limit the number of results per page, add `pages?` after `places/`, then specity the pageNumber (which page you would like to see) and pageSize (how many results you would like per page. Here is an example query:  `http://localhost:5000/api/places/pages?pageNumber=2&pageSize=8`. If pageSize is not specified, the default number of results per page is 10.
+
 ## Known Bugs
 
 | Bug : Message | Situation | Resolved (Y/N) | How was the issue resolved? |
