@@ -59,9 +59,8 @@ namespace ExplorationApi.Controllers
         .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
         .Take(validFilter.PageSize)
         .ToListAsync();
-
-      var response = await _db.Places.ToListAsync();
-      return Ok(response);
+      var totalRecords = await _db.Places.CountAsync();
+      return Ok(new PagedResponse<List<Place>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
     }
 
     [HttpGet("{id}")]
