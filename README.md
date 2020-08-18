@@ -30,7 +30,7 @@ As a user, I want to look up random destinations just for fun.
 
 ## Setup/Installation Requirements
 
-There are multiple ways to query the API. To search by username or rating(1-5), add the parameter(s) after `places?` like so: `http://localhost:5000/api/places?username=kate&rating=5`. Use an ampersand(&) to separate parameters.
+There are multiple ways to query the API. To search by username or a specific rating(1-5), add the parameter(s) after `places?` like so: `http://localhost:5000/api/places?username=kate&rating=5`. Use an ampersand(&) to separate parameters.
 
 
 

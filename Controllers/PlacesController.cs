@@ -84,12 +84,23 @@ namespace ExplorationApi.Controllers
       return Ok(new Response<Place>(place));
     }
 
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] Place place)
+    // [HttpPut("{id}")]
+    // public void Put(int id, [FromBody] Place place)
+    // {
+    //   place.PlaceId = id;
+    //   _db.Entry(place).State = EntityState.Modified;
+    //   _db.SaveChanges();
+    // }
+
+    [HttpPut("{username}/{id}")]
+    public void Put(int id, [FromBody] Place place, string username)
     {
-      place.PlaceId = id;
-      _db.Entry(place).State = EntityState.Modified;
-      _db.SaveChanges();
+      if(place.UserName == username)
+      {
+        place.PlaceId = id;
+        _db.Entry(place).State = EntityState.Modified;
+        _db.SaveChanges();
+      }
     }
 
     [HttpDelete("{id}")]
