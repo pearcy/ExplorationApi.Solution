@@ -39,6 +39,7 @@ namespace ExplorationApi.Controllers
       _db.Places.Add(place);
       _db.SaveChanges();
     }
+    
     [HttpGet("{id}")]
     public ActionResult<Place> Get(int id)
     {
