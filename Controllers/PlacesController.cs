@@ -8,12 +8,6 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using ExplorationApi.Wrappers;
-// using Pagination.WebApi.Contexts;
-// using Pagination.WebApi.Filter;
-// using Pagination.WebApi.Helpers;
-// using Pagination.WebApi.Models;
-// using Pagination.WebApi.Services;
-// using Pagination.WebApi.Wrappers;
 
 namespace ExplorationApi.Controllers
 {
@@ -26,9 +20,9 @@ namespace ExplorationApi.Controllers
     {
       _db = db;
     }
-    
+
     [HttpGet]
-    public ActionResult<IEnumerable<Place>> GetAction(string username, int rating)
+    public ActionResult<IEnumerable<Place>> GetAction(string username, int rating, string country)
     {
       var query = _db.Places.AsQueryable();
 
@@ -36,7 +30,10 @@ namespace ExplorationApi.Controllers
       {
         query = query.Where(entry => entry.UserName == username);
       }
-
+      if (country != null)
+      {
+        query = query.Where(entry => entry.Country == username);
+      }
       if (rating != 0)
       {
         query = query.Where(entry => entry.Rating == rating);
@@ -63,7 +60,7 @@ namespace ExplorationApi.Controllers
       var query = _db.Places.OrderBy(entry => entry.Rating);
       return query.ToList();
     }
-    
+
     [HttpGet("pages/")]
     public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
     {
@@ -84,18 +81,10 @@ namespace ExplorationApi.Controllers
       return Ok(new Response<Place>(place));
     }
 
-    // [HttpPut("{id}")]
-    // public void Put(int id, [FromBody] Place place)
-    // {
-    //   place.PlaceId = id;
-    //   _db.Entry(place).State = EntityState.Modified;
-    //   _db.SaveChanges();
-    // }
-
     [HttpPut("{username}/{id}")]
     public void Put(int id, [FromBody] Place place, string username)
     {
-      if(place.UserName == username)
+      if (place.UserName == username)
       {
         place.PlaceId = id;
         _db.Entry(place).State = EntityState.Modified;
@@ -103,12 +92,15 @@ namespace ExplorationApi.Controllers
       }
     }
 
-    [HttpDelete("{id}")]
-    public void Delete(int id)
+    [HttpDelete("{username}/{id}")]
+    public void Delete(int id, [FromBody] Place place, string username)
     {
-      var placeToDelete = _db.Places.FirstOrDefault(entry => entry.PlaceId == id);
-      _db.Places.Remove(placeToDelete);
-      _db.SaveChanges();
+      if (place.UserName == username)
+      {
+        var placeToDelete = _db.Places.FirstOrDefault(entry => entry.PlaceId == id);
+        _db.Places.Remove(placeToDelete);
+        _db.SaveChanges();
+      }
     }
   }
 }
